@@ -2,6 +2,8 @@
 
 syntax analyzer of Golang source code.
 
+![lesphina & arion](https://i.pinimg.com/736x/35/e9/42/35e942e53b10d00138db8156ef6b73d1---s.jpg)
+
 ## (Ideal) usage
 
 ### load
