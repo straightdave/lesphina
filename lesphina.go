@@ -9,9 +9,6 @@ type Lesphina struct {
 	Meta     *Meta        `json:"meta"`
 }
 
-type Meta struct {
-}
-
 func Read(source string) (*Lesphina, error) {
 	var fi os.FileInfo
 	var err error

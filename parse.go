@@ -11,15 +11,18 @@ import (
 )
 
 var (
-	// internal storage
-	_functions []*item.Function
-
 	// counters
 	nTotal, nImport, nConst, nType, nVar, nOther uint
 	nFunction                                    uint
 )
 
+type Meta struct {
+	Functions []*item.Function
+}
+
 func parseSource(source string) (*Meta, error) {
+	meta := &Meta{}
+
 	fset := token.NewFileSet()
 	ff, err := parser.ParseFile(fset, source, nil, parser.ParseComments)
 	if err != nil {
@@ -34,6 +37,7 @@ func parseSource(source string) (*Meta, error) {
 	ast.Inspect(ff, func(n ast.Node) bool {
 
 		switch d := n.(type) {
+
 		case *ast.GenDecl:
 			// GenDecl (general declarations): import, var, const, type
 
@@ -84,7 +88,7 @@ func parseSource(source string) (*Meta, error) {
 		// 		for _, f := range d.Fields.List {
 		// 			str.Fields = append(str.Fields, &Element{
 		// 				Name: getNameFromIdents(f.Names),
-		// 				Type: getTypeName(fset, f.Type),
+		// 				Type: getNodeRawString(fset, f.Type),
 		// 			})
 		// 		}
 
@@ -117,23 +121,23 @@ func parseSource(source string) (*Meta, error) {
 
 			fun := &item.Function{
 				Name:    d.Name.Name,
-				RawBody: getRawBody(d.Body),
+				RawBody: getNodeRawString(fset, d.Body),
 			}
 
-			// receiver
+			// receivers
 			if d.Recv.NumFields() > 0 {
 				for _, r := range d.Recv.List {
 					recv := &item.Element{
 						Name:    getNameFromIdents(r.Names),
-						RawType: getTypeName(fset, r.Type),
+						RawType: getNodeRawString(fset, r.Type),
 					}
 
 					// if ex, ok := r.Type.(*ast.StarExpr); ok {
 					// 	// is pointer
 					// 	recv.IsPointer = true
-					// 	recv.Type = getTypeName(fset, ex.X)
+					// 	recv.Type = getNodeRawString(fset, ex.X)
 					// } else {
-					// 	recv.Type = getTypeName(fset, r.Type)
+					// 	recv.Type = getNodeRawString(fset, r.Type)
 					// }
 
 					fun.Recv = append(fun.Recv, recv)
@@ -145,7 +149,7 @@ func parseSource(source string) (*Meta, error) {
 				for _, p := range d.Type.Params.List {
 					fun.In = append(fun.In, &item.Element{
 						Name:    getNameFromIdents(p.Names),
-						RawType: getTypeName(fset, p.Type),
+						RawType: getNodeRawString(fset, p.Type),
 					})
 				}
 			}
@@ -153,27 +157,26 @@ func parseSource(source string) (*Meta, error) {
 			// out params
 			if d.Type.Results.NumFields() > 0 {
 				for _, r := range d.Type.Results.List {
-					fun.Out = append(fun.Out, &Element{
+					fun.Out = append(fun.Out, &item.Element{
 						Name:    getNameFromIdents(r.Names),
-						RawType: getTypeName(fset, r.Type),
+						RawType: getNodeRawString(fset, r.Type),
 					})
 				}
 			}
 
-			_functions = append(_functions, fun)
+			meta.Functions = append(meta.Functions, fun)
+
 		}
 
 		return true
 	})
 
-	return &Meta{
-		Functions: _functions,
-	}, nil
+	return meta, nil
 }
 
-func getTypeName(fset *token.FileSet, exp ast.Expr) string {
+func getNodeRawString(fset *token.FileSet, node ast.Node) string {
 	var tmp bytes.Buffer
-	printer.Fprint(&tmp, fset, exp)
+	printer.Fprint(&tmp, fset, node)
 	return string(tmp.Bytes())
 }
 
@@ -181,10 +184,5 @@ func getNameFromIdents(idents []*ast.Ident) (res string) {
 	if len(idents) > 0 {
 		res = idents[0].Name
 	}
-	return
-}
-
-func getRawBody(b *ast.BlockStmt) (res string) {
-
 	return
 }
