@@ -21,7 +21,7 @@ someStructs      := les.Query().ByName("Foo???").ByType(lesphina.STRUCT).All()
 someNotExported  := les.Query().ByName("bar*").ByType(lesphina.VAR).Exported(false).First()
 ```
 
-### read meta
+### meta
 ```golang
 myStruct := les.Query().ByName("MyStruct").ByType(lesphina.STRUCT).First()
 fmt.Println(myStruct.Name)
