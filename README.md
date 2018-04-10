@@ -1,4 +1,4 @@
-# lesphina
+# lesphina [![Build Status](https://travis-ci.org/straightdave/lesphina.svg?branch=master)](https://travis-ci.org/straightdave/lesphina)
 
 Syntax analyzer of Golang source code.
 
