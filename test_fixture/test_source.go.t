@@ -25,6 +25,14 @@ type Int2 interface{
     Name() string
 }
 
+type Str1 struct {}
+type Str2 struct {
+    Name string
+}
+
+// alias
+type Aha int
+
 var v1 int
 var v2 string
 

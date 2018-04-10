@@ -2,6 +2,7 @@ package lesphina
 
 import (
 	"bytes"
+	"encoding/json"
 	"go/ast"
 	"go/parser"
 	"go/printer"
@@ -23,6 +24,11 @@ type Meta struct {
 	Structs    []*item.Struct    `json:"structs"`
 	Interfaces []*item.Interface `json:"interfaces"`
 	Functions  []*item.Function  `json:"functions"`
+}
+
+func (m *Meta) Json() string {
+	res, _ := json.MarshalIndent(m, "", "    ")
+	return string(res)
 }
 
 func parseSource(source string) (*Meta, error) {
@@ -57,14 +63,14 @@ func parseSource(source string) (*Meta, error) {
 				nVar++
 			case token.TYPE:
 				// there're mainly 3 kinds of 'type' declaration:
-				// 'struct', 'interface' and 'alias'
+				// 'struct', 'interface' and alias
 				nType++
 
 				// we can get names before we go further to 'struct' or 'interface' keywords
 				// normally the Specs of such declaration is one and only one
 				tName := d.Specs[0].(*ast.TypeSpec).Name.Name
 
-				// position of literal 'interface', 'struct' or 'alias' keyword
+				// position of literal 'interface', 'struct' or types (for alias) keyword
 				tPos := fset.Position(d.Pos()).Offset
 				posType[tPos+len(tName)+6] = tName // 6 = 4 (len of keyword 'type') + two spaces
 

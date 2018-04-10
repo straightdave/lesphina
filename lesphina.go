@@ -1,7 +1,13 @@
 package lesphina
 
 import (
+	"errors"
 	"os"
+)
+
+var (
+	ErrNoSuchFile      = errors.New("No Such File")
+	ErrDirNotSupported = errors.New("Dir Not Supported")
 )
 
 type Lesphina struct {

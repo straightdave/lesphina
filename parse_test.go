@@ -10,29 +10,11 @@ func TestParse(t *testing.T) {
 		t.Fatalf("parsing failed: %v\n", err)
 	}
 
-	t.Logf("%#+v\n", meta)
+	t.Logf("\n%v\n", meta.Json())
 
-	// functions
-	t.Logf("Func: %d in total\n", meta.NumFunction)
-	for _, f := range meta.Functions {
-		t.Logf("func# %s:\n", f.Name)
-		t.Logf("recv=>\n")
-		for _, r := range f.Recv {
-			t.Logf("\t%s: %s\n", r.Name, r.RawType)
-		}
-
-		t.Logf("in-params=>\n")
-		for _, in := range f.In {
-			t.Logf("\t%s: %s\n", in.Name, in.RawType)
-		}
-
-		t.Logf("out-params=>\n")
-		for _, o := range f.Out {
-			t.Logf("\t%s: %s\n", o.Name, o.RawType)
-		}
-
-		t.Logf("raw body=>\n")
-		t.Logf("\n%s\n", f.RawBody)
-		t.Log()
+	if meta.NumFunction != uint(len(meta.Functions)) ||
+		meta.NumInterface != uint(len(meta.Interfaces)) ||
+		meta.NumStruct != uint(len(meta.Structs)) {
+		t.Fail()
 	}
 }
