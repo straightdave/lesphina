@@ -13,11 +13,16 @@ import (
 var (
 	// counters
 	nTotal, nImport, nConst, nType, nVar, nOther uint
-	nFunction                                    uint
 )
 
 type Meta struct {
-	Functions []*item.Function
+	NumStruct    uint `json:"num_struct"`
+	NumInterface uint `json:"num_interface"`
+	NumFunction  uint `json:"num_function"`
+
+	Structs    []*item.Struct    `json:"structs"`
+	Interfaces []*item.Interface `json:"interfaces"`
+	Functions  []*item.Function  `json:"functions"`
 }
 
 func parseSource(source string) (*Meta, error) {
@@ -51,15 +56,15 @@ func parseSource(source string) (*Meta, error) {
 			case token.VAR:
 				nVar++
 			case token.TYPE:
-				// type declaration mainly has 3 kinds:
+				// there're mainly 3 kinds of 'type' declaration:
 				// 'struct', 'interface' and 'alias'
 				nType++
 
 				// we can get names before we go further to 'struct' or 'interface' keywords
-				// normally the Specs of such declaration is only one
+				// normally the Specs of such declaration is one and only one
 				tName := d.Specs[0].(*ast.TypeSpec).Name.Name
 
-				// position of literal 'type' word
+				// position of literal 'interface', 'struct' or 'alias' keyword
 				tPos := fset.Position(d.Pos()).Offset
 				posType[tPos+len(tName)+6] = tName // 6 = 4 (len of keyword 'type') + two spaces
 
@@ -68,56 +73,58 @@ func parseSource(source string) (*Meta, error) {
 				nOther++
 			}
 
-		// case *ast.StructType:
-		// 	// happens when parsing the 'struct' keywords
-		// 	// and this happens normally after parsing its 'type' keyword
+		case *ast.StructType:
+			// happens when parsing the 'struct' keywords
+			// and this happens normally after parsing its 'type' keyword
 
-		// 	nStruct++
+			meta.NumStruct++
 
-		// 	// this d is the literal 'struct' keywords
-		// 	// check its type name if its position exists in temp pos map
-		// 	tPos := fset.Position(d.Pos()).Offset
-		// 	if tName, ok := posType[tPos]; ok {
-		// 		// we get a struct
+			// this d is the literal 'struct' keywords
+			// check its type name if its position exists in temp pos map
+			tPos := fset.Position(d.Pos()).Offset
+			if tName, ok := posType[tPos]; ok {
+				// we get a struct
 
-		// 		str := &Struct{
-		// 			Name: tName,
-		// 		}
+				str := &item.Struct{
+					Name:    tName,
+					RawBody: getNodeRawString(fset, d),
+				}
 
-		// 		// listing *ast.Field, the fields of such struct
-		// 		for _, f := range d.Fields.List {
-		// 			str.Fields = append(str.Fields, &Element{
-		// 				Name: getNameFromIdents(f.Names),
-		// 				Type: getNodeRawString(fset, f.Type),
-		// 			})
-		// 		}
+				// listing *ast.Field, the fields of such struct
+				for _, f := range d.Fields.List {
+					str.Fields = append(str.Fields, &item.Element{
+						Name:    getNameFromIdents(f.Names),
+						RawType: getNodeRawString(fset, f.Type),
+					})
+				}
 
-		// 		_structs = append(_structs, str)
-		// 	}
+				meta.Structs = append(meta.Structs, str)
+			}
 
-		// case *ast.InterfaceType:
-		// 	// happens when parsing the 'interface' keywords
-		// 	// and this happens normally after parsing its 'type' keyword
+		case *ast.InterfaceType:
+			// happens when parsing the 'interface' keywords
+			// and this happens normally after parsing its 'type' keyword
 
-		// 	nInterface++
+			meta.NumInterface++
 
-		// 	// this d is the literal 'interface' keywords
-		// 	// check its type name if its position exists in temp pos map
-		// 	tPos := fset.Position(d.Pos()).Offset
-		// 	if tName, ok := posType[tPos]; ok {
-		// 		// we get an interface
+			// this d is the literal 'interface' keywords
+			// check its type name if its position exists in temp pos map
+			tPos := fset.Position(d.Pos()).Offset
+			if tName, ok := posType[tPos]; ok {
+				// we get an interface
 
-		// 		intf := &Interface{
-		// 			Name: tName,
-		// 		}
+				intf := &item.Interface{
+					Name:    tName,
+					RawBody: getNodeRawString(fset, d),
+				}
 
-		// 		_interfaces = append(_interfaces, intf)
-		// 	}
+				meta.Interfaces = append(meta.Interfaces, intf)
+			}
 
 		case *ast.FuncDecl:
 			// happens when parsing the 'func' keywords
 
-			nFunction++
+			meta.NumFunction++
 
 			fun := &item.Function{
 				Name:    d.Name.Name,
@@ -165,7 +172,6 @@ func parseSource(source string) (*Meta, error) {
 			}
 
 			meta.Functions = append(meta.Functions, fun)
-
 		}
 
 		return true

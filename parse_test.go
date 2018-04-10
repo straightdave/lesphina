@@ -4,12 +4,16 @@ import (
 	"testing"
 )
 
-func TestParseFunctions(t *testing.T) {
+func TestParse(t *testing.T) {
 	meta, err := parseSource("./test_fixture/test_source.go.t")
 	if err != nil {
 		t.Fatalf("parsing failed: %v\n", err)
 	}
 
+	t.Logf("%#+v\n", meta)
+
+	// functions
+	t.Logf("Func: %d in total\n", meta.NumFunction)
 	for _, f := range meta.Functions {
 		t.Logf("func# %s:\n", f.Name)
 		t.Logf("recv=>\n")

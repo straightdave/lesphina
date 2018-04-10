@@ -30,3 +30,14 @@ func (q *Query) First() *Result {
 func (q *Query) All() []*Result {
 	return []*Result{&Result{}}
 }
+
+type Type int
+
+const (
+	IMPORT Type = iota
+	STRUCT
+	INTERFACE
+	FUNCTION
+	VAR
+	CONST
+)
