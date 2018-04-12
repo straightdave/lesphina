@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"go/printer"
 	"go/token"
+	"strings"
 
 	item "github.com/straightdave/lesphina/item"
 )
@@ -197,4 +198,21 @@ func getNameFromIdents(idents []*ast.Ident) (res string) {
 		res = idents[0].Name
 	}
 	return
+}
+
+// special helpers
+
+func (les *Lesphina) MethodsOfStruct(s *item.Struct) []*item.Function {
+	var res []*item.Function
+	for _, f := range les.Meta.Functions {
+		// for now only consider single receiver
+		if len(f.Recv) == 1 {
+			// for now, using 'contains' to tell (can cover pointer condition);
+			// but may not work for maps or slices
+			if strings.Contains(f.Recv[0].RawType, s.Name) {
+				res = append(res, f)
+			}
+		}
+	}
+	return res
 }
