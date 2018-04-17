@@ -18,10 +18,14 @@ var (
 )
 
 type Meta struct {
+	NumImport    uint `json:"num_import"`
+	NumVar       uint `json:"num_var"` // package level Var
 	NumStruct    uint `json:"num_struct"`
 	NumInterface uint `json:"num_interface"`
 	NumFunction  uint `json:"num_function"`
 
+	Imports    []*item.Import    `json:"imports"`
+	Vars       []*item.Var       `json:"vars"`
 	Structs    []*item.Struct    `json:"structs"`
 	Interfaces []*item.Interface `json:"interfaces"`
 	Functions  []*item.Function  `json:"functions"`
