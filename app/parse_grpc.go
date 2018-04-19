@@ -9,6 +9,11 @@ import (
 	"github.com/straightdave/lesphina"
 )
 
+// gRPC endpoint
+type Endpoint struct {
+	Name string `json:"name"`
+}
+
 func main() {
 	if len(os.Args) != 2 {
 		exit("Need one argument: pb-go file")

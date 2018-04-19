@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"go/printer"
 	"go/token"
+	"regexp"
 	"strings"
 
 	item "github.com/straightdave/lesphina/item"
@@ -15,6 +16,9 @@ import (
 var (
 	// counters
 	nTotal, nImport, nConst, nType, nVar, nOther uint
+
+	// regex to read in- and out-params of interfaces' methods
+	rParams = regexp.MustCompile(`func\((.*?)\)(.*)`)
 )
 
 type Meta struct {
@@ -31,14 +35,14 @@ type Meta struct {
 	Functions  []*item.Function  `json:"functions"`
 }
 
-func (m *Meta) Json() string {
-	res, _ := json.MarshalIndent(m, "", "    ")
-	return string(res)
-}
+func parseSource(source string) (meta *Meta, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			meta, err = nil, r.(error)
+		}
+	}()
 
-func parseSource(source string) (*Meta, error) {
-	meta := &Meta{}
-
+	meta = &Meta{}
 	fset := token.NewFileSet()
 	ff, err := parser.ParseFile(fset, source, nil, parser.ParseComments)
 	if err != nil {
@@ -72,7 +76,7 @@ func parseSource(source string) (*Meta, error) {
 				nType++
 
 				// we can get names before we go further to 'struct' or 'interface' keywords
-				// normally the Specs of such declaration is one and only one
+				// normally it has one and only one of such Specs
 				tName := d.Specs[0].(*ast.TypeSpec).Name.Name
 
 				// position of literal 'interface', 'struct' or types (for alias) keyword
@@ -127,6 +131,18 @@ func parseSource(source string) (*Meta, error) {
 				intf := &item.Interface{
 					Name:    tName,
 					RawBody: getNodeRawString(fset, d),
+				}
+
+				if d.Methods.NumFields() > 0 {
+					for _, m := range d.Methods.List {
+						tmp := &item.InterfaceMethod{
+							Name:    getNameFromIdents(m.Names),
+							RawType: getNodeRawString(fset, m.Type),
+						}
+
+						getInterfaceMethodDetail(tmp)
+						intf.Methods = append(intf.Methods, tmp)
+					}
 				}
 
 				meta.Interfaces = append(meta.Interfaces, intf)
@@ -204,7 +220,79 @@ func getNameFromIdents(idents []*ast.Ident) (res string) {
 	return
 }
 
-// special helpers
+func getInterfaceMethodDetail(m *item.InterfaceMethod) {
+	rawType := m.RawType // "func(.. ..) ...."
+
+	tmp := rParams.FindStringSubmatch(rawType)
+
+	// if matches, tmp must be 3 parts (whole matched string, group1, group2)
+	if len(tmp) != 3 {
+		return
+	}
+
+	group1 := tmp[1]
+	group2 := strings.TrimSpace(tmp[2])
+	group2 = strings.TrimPrefix(group2, "(")
+	group2 = strings.TrimSuffix(group2, ")")
+
+	inParams := getArgs(group1)
+	outParams := getArgs(group2)
+
+	for i := len(inParams) - 1; i >= 0; i-- {
+		ele := &item.Element{
+			Name:    inParams[i][0],
+			RawType: inParams[i][1],
+		}
+		m.In = append(m.In, ele)
+	}
+
+	for i := len(outParams) - 1; i >= 0; i-- {
+		ele := &item.Element{
+			Name:    outParams[i][0],
+			RawType: outParams[i][1],
+		}
+		m.Out = append(m.Out, ele)
+	}
+}
+
+func getArgs(raw string) (res [][]string) {
+	// raw is like: "a1, a2 t1, b t2", "t1, t2", "a1 t1" or just "t1"
+
+	if raw == "" {
+		return
+	}
+
+	parts := strings.Split(raw, ",")
+
+	var lastType string
+
+	for i := len(parts) - 1; i >= 0; i-- {
+		var arg []string
+
+		tmp := strings.TrimSpace(parts[i])
+		innerParts := strings.Split(tmp, " ")
+		if len(innerParts) == 2 {
+			arg = append(arg, innerParts[0])
+			arg = append(arg, innerParts[1])
+			res = append(res, arg)
+
+			lastType = innerParts[1]
+		} else if len(innerParts) == 1 {
+			if len(parts) == 1 {
+				arg = append(arg, "")
+				arg = append(arg, innerParts[0])
+			} else {
+				arg = append(arg, innerParts[0])
+				arg = append(arg, lastType)
+			}
+			res = append(res, arg)
+		}
+	}
+
+	return
+}
+
+// ---- special helpers
 
 func (les *Lesphina) MethodsOfStruct(s *item.Struct) []*item.Function {
 	var res []*item.Function
@@ -219,4 +307,9 @@ func (les *Lesphina) MethodsOfStruct(s *item.Struct) []*item.Function {
 		}
 	}
 	return res
+}
+
+func Jsonify(obj interface{}) string {
+	res, _ := json.MarshalIndent(obj, "", "    ")
+	return string(res)
 }

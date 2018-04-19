@@ -23,6 +23,7 @@ type Int1 interface{}
 
 type Int2 interface{
     Name() string
+    SayHello(name, lastName string, age int) (t string, t2 error)
 }
 
 type Str1 struct {}
