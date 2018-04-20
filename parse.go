@@ -259,6 +259,11 @@ func parseEle(ele *item.Element) {
 
 	ele.BaseType = ele.RawType
 
+	if strings.HasPrefix(ele.BaseType, "...") {
+		ele.IsVariadic = true
+		ele.BaseType = strings.TrimLeft(ele.BaseType, "...")
+	}
+
 	if strings.HasPrefix(ele.BaseType, "*") {
 		ele.IsPointer = true
 		ele.BaseType = strings.TrimLeft(ele.RawType, "*")

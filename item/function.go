@@ -12,9 +12,10 @@ type Element struct {
 	Name    string `json:"name"`
 	RawType string `json:"raw_type"`
 
-	IsPointer bool `json:"is_pointer"`
-	IsSlice   bool `json:"is_slice"`
-	IsMap     bool `json:"is_map"`
+	IsPointer  bool `json:"is_pointer"`
+	IsSlice    bool `json:"is_slice"`
+	IsVariadic bool `json:"is_variadic"`
+	IsMap      bool `json:"is_map"`
 
 	BaseType  string `json:"base_type"`
 	KeyType   string `json:"key_type,omitempty"`
