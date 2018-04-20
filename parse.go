@@ -15,10 +15,13 @@ import (
 
 var (
 	// counters
-	nTotal, nImport, nConst, nType, nVar, nOther uint
+	nImport, nConst, nType, nVar uint
 
 	// regex to read in- and out-params of interfaces' methods
 	rParams = regexp.MustCompile(`func\((.*?)\)(.*)`)
+
+	// regex to parse map type
+	rMap = regexp.MustCompile(`map\[(.*?)\](.*)`)
 )
 
 type Meta struct {
@@ -61,8 +64,6 @@ func parseSource(source string) (meta *Meta, err error) {
 		case *ast.GenDecl:
 			// GenDecl (general declarations): import, var, const, type
 
-			nTotal++
-
 			switch d.Tok {
 			case token.IMPORT:
 				nImport++
@@ -82,15 +83,10 @@ func parseSource(source string) (meta *Meta, err error) {
 				// position of literal 'interface', 'struct' or types (for alias) keyword
 				tPos := fset.Position(d.Pos()).Offset
 				posType[tPos+len(tName)+6] = tName // 6 = 4 (len of keyword 'type') + two spaces
-
-			default:
-				// other GenDecl tokens (none in theory)
-				nOther++
 			}
 
 		case *ast.StructType:
-			// happens when parsing the 'struct' keywords
-			// and this happens normally after parsing its 'type' keyword
+			// struct declaration
 
 			meta.NumStruct++
 
@@ -107,18 +103,19 @@ func parseSource(source string) (meta *Meta, err error) {
 
 				// listing *ast.Field, the fields of such struct
 				for _, f := range d.Fields.List {
-					str.Fields = append(str.Fields, &item.Element{
+					ele := &item.Element{
 						Name:    getNameFromIdents(f.Names),
 						RawType: getNodeRawString(fset, f.Type),
-					})
+					}
+					parseEle(ele)
+					str.Fields = append(str.Fields, ele)
 				}
 
 				meta.Structs = append(meta.Structs, str)
 			}
 
 		case *ast.InterfaceType:
-			// happens when parsing the 'interface' keywords
-			// and this happens normally after parsing its 'type' keyword
+			// interface declaration
 
 			meta.NumInterface++
 
@@ -149,7 +146,7 @@ func parseSource(source string) (meta *Meta, err error) {
 			}
 
 		case *ast.FuncDecl:
-			// happens when parsing the 'func' keywords
+			// function declaration
 
 			meta.NumFunction++
 
@@ -165,15 +162,7 @@ func parseSource(source string) (meta *Meta, err error) {
 						Name:    getNameFromIdents(r.Names),
 						RawType: getNodeRawString(fset, r.Type),
 					}
-
-					// if ex, ok := r.Type.(*ast.StarExpr); ok {
-					// 	// is pointer
-					// 	recv.IsPointer = true
-					// 	recv.Type = getNodeRawString(fset, ex.X)
-					// } else {
-					// 	recv.Type = getNodeRawString(fset, r.Type)
-					// }
-
+					parseEle(recv)
 					fun.Recv = append(fun.Recv, recv)
 				}
 			}
@@ -181,20 +170,24 @@ func parseSource(source string) (meta *Meta, err error) {
 			// in params
 			if d.Type.Params.NumFields() > 0 {
 				for _, p := range d.Type.Params.List {
-					fun.In = append(fun.In, &item.Element{
+					ele := &item.Element{
 						Name:    getNameFromIdents(p.Names),
 						RawType: getNodeRawString(fset, p.Type),
-					})
+					}
+					parseEle(ele)
+					fun.In = append(fun.In, ele)
 				}
 			}
 
 			// out params
 			if d.Type.Results.NumFields() > 0 {
 				for _, r := range d.Type.Results.List {
-					fun.Out = append(fun.Out, &item.Element{
+					ele := &item.Element{
 						Name:    getNameFromIdents(r.Names),
 						RawType: getNodeRawString(fset, r.Type),
-					})
+					}
+					parseEle(ele)
+					fun.Out = append(fun.Out, ele)
 				}
 			}
 
@@ -243,6 +236,7 @@ func getInterfaceMethodDetail(m *item.InterfaceMethod) {
 			Name:    inParams[i][0],
 			RawType: inParams[i][1],
 		}
+		parseEle(ele)
 		m.In = append(m.In, ele)
 	}
 
@@ -251,7 +245,40 @@ func getInterfaceMethodDetail(m *item.InterfaceMethod) {
 			Name:    outParams[i][0],
 			RawType: outParams[i][1],
 		}
+		parseEle(ele)
 		m.Out = append(m.Out, ele)
+	}
+}
+
+func parseEle(ele *item.Element) {
+	// parse deeper of element
+
+	if ele.RawType == "" {
+		return
+	}
+
+	ele.BaseType = ele.RawType
+
+	if strings.HasPrefix(ele.BaseType, "*") {
+		ele.IsPointer = true
+		ele.BaseType = strings.TrimLeft(ele.RawType, "*")
+	}
+
+	if strings.HasPrefix(ele.BaseType, "[]") {
+		ele.IsSlice = true
+		ele.BaseType = strings.TrimLeft(ele.BaseType, "[]")
+	}
+
+	if strings.HasPrefix(ele.BaseType, "map") {
+		ele.IsMap = true
+
+		matches := rMap.FindStringSubmatch(ele.BaseType)
+		if len(matches) != 3 {
+			return
+		}
+
+		ele.KeyType = matches[1]
+		ele.ValueType = matches[2]
 	}
 }
 
