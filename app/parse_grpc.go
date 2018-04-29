@@ -9,9 +9,16 @@ import (
 	"github.com/straightdave/lesphina"
 )
 
-// gRPC endpoint
+// gRPC
+type Service struct {
+	Name      string     `json:"name"`
+	Endpoints []Endpoint `json:"endpoints"`
+}
+
 type Endpoint struct {
-	Name string `json:"name"`
+	Name    string `json:"name"`
+	Intype  string `json:"in"`
+	Outtype string `json:"out"`
 }
 
 func main() {
@@ -24,24 +31,45 @@ func main() {
 		exit("file should has suffix '.pb.go'")
 	}
 
-	jsonStr, err := getMeta(goFilename)
+	info, err := getServiceInfo(goFilename)
 	if err != nil {
 		exit(err.Error())
 	}
 
-	fmt.Println(jsonStr)
+	fmt.Println(info)
 }
 
-func getMeta(file string) (string, error) {
+func getServiceInfo(file string) (string, error) {
 	les, err := lesphina.Read(file)
 	if err != nil {
 		return "", fmt.Errorf("Lesphina failed to read file: %v", err)
 	}
 
-	bytes, err := json.MarshalIndent(les.Meta, "", "    ")
-	if err != nil {
-		return "", err
+	var grpc []Service
+	for _, inf := range les.Meta.Interfaces {
+		if !strings.HasSuffix(inf.Name, "Server") {
+			// only consider server interface for its conciseness
+			continue
+		}
+
+		svc := Service{
+			Name: inf.Name,
+		}
+
+		var ends []Endpoint
+		for _, met := range inf.Methods {
+			ends = append(ends, Endpoint{
+				Name:    met.Name,
+				Intype:  met.FirstInParamLike("~Request").RawType,
+				Outtype: met.FirstOutParamLike("~Response").RawType,
+			})
+		}
+
+		svc.Endpoints = ends
+		grpc = append(grpc, svc)
 	}
+
+	bytes, _ := json.MarshalIndent(grpc, "", "    ")
 
 	return string(bytes), nil
 }

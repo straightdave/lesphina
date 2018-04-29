@@ -288,7 +288,9 @@ func parseEle(ele *item.Element) {
 
 func getArgs(raw string) (res [][]string) {
 	// structuring go pattern argument list
-	// raw is like: "a1, a2 t1, b t2", "t1, t2", "a1 t1" or just "t1"
+	// raw is like: "a1, a2 t1, b t2", "t1, t2 (only types)", "a1 t1" or just "t1"
+	// no such: "a1 t1, t2" (cannot omit any name except all names are omitted)
+	// and cannot omit the last type
 
 	if raw == "" {
 		return
@@ -303,6 +305,7 @@ func getArgs(raw string) (res [][]string) {
 
 		tmp := strings.TrimSpace(parts[i])
 		innerParts := strings.Split(tmp, " ")
+
 		if len(innerParts) == 2 {
 			arg = append(arg, innerParts[0])
 			arg = append(arg, innerParts[1])
@@ -310,7 +313,7 @@ func getArgs(raw string) (res [][]string) {
 
 			lastType = innerParts[1]
 		} else if len(innerParts) == 1 {
-			if len(parts) == 1 {
+			if lastType == "" {
 				arg = append(arg, "")
 				arg = append(arg, innerParts[0])
 			} else {

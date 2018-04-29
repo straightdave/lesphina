@@ -2,6 +2,8 @@ package lesphina
 
 import (
 	"testing"
+
+	"github.com/straightdave/lesphina/item"
 )
 
 func TestParse(t *testing.T) {
@@ -33,5 +35,34 @@ func TestParsingInterfaces(t *testing.T) {
 	for _, intr := range interfaces {
 		t.Log(Jsonify(intr))
 		t.Log("----")
+	}
+}
+
+func TestGetArgs(t *testing.T) {
+	t.Logf("res: %+v\n", getArgs("t1"))
+	t.Logf("res: %+v\n", getArgs("t1,t2"))
+	t.Logf("res: %+v\n", getArgs("a t1, b t2"))
+
+	// omit one type (not the last)
+	t.Logf("res: %+v\n", getArgs("a1, a2 t1, b t2"))
+
+	// omit any name will cause problems
+	// but it's fine since that's illegal
+	t.Logf("res: %+v\n", getArgs("t1, b t2"))
+	t.Logf("res: %+v\n", getArgs("a t1, t2")) // same as: omit last type
+}
+
+func TestParseEle(t *testing.T) {
+	ele := &item.Element{
+		Name:    "hahaha",
+		RawType: "*XXXRequest",
+	}
+
+	parseEle(ele)
+
+	t.Logf("parsed ele: %+v\n", ele)
+
+	if ele.IsPointer != true {
+		t.Fail()
 	}
 }
