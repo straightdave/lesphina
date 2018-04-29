@@ -10,13 +10,10 @@ import (
 	"regexp"
 	"strings"
 
-	item "github.com/straightdave/lesphina/item"
+	"github.com/straightdave/lesphina/item"
 )
 
 var (
-	// counters
-	nImport, nConst, nType, nVar uint
-
 	// regex to read in- and out-params of interfaces' methods
 	rParams = regexp.MustCompile(`func\((.*?)\)(.*)`)
 
@@ -66,15 +63,17 @@ func parseSource(source string) (meta *Meta, err error) {
 
 			switch d.Tok {
 			case token.IMPORT:
-				nImport++
+				// TODO
+				meta.NumImport++
 			case token.CONST:
-				nConst++
+				// TODO
+				meta.NumVar++
 			case token.VAR:
-				nVar++
+				// TODO
+				meta.NumVar++
 			case token.TYPE:
 				// there're mainly 3 kinds of 'type' declaration:
 				// 'struct', 'interface' and alias
-				nType++
 
 				// we can get names before we go further to 'struct' or 'interface' keywords
 				// normally it has one and only one of such Specs
@@ -288,6 +287,7 @@ func parseEle(ele *item.Element) {
 }
 
 func getArgs(raw string) (res [][]string) {
+	// structuring go pattern argument list
 	// raw is like: "a1, a2 t1, b t2", "t1, t2", "a1 t1" or just "t1"
 
 	if raw == "" {
@@ -327,6 +327,9 @@ func getArgs(raw string) (res [][]string) {
 // ---- special helpers
 
 func (les *Lesphina) MethodsOfStruct(s *item.Struct) []*item.Function {
+	// get methods of given struct
+	// TODO: move it to Struct.go
+
 	var res []*item.Function
 	for _, f := range les.Meta.Functions {
 		// for now only consider single receiver
