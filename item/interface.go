@@ -17,12 +17,20 @@ type InterfaceMethod struct {
 	Out     []*Element `json:"out,omitempty"`
 }
 
-func (m *InterfaceMethod) FirstInParamLike(pattern string) *Element {
+type funcLike interface {
+	InParams() []*Element
+	OutParams() []*Element
+}
+
+func (i *InterfaceMethod) InParams() []*Element  { return i.In }
+func (i *InterfaceMethod) OutParams() []*Element { return i.Out }
+
+func FirstInParam(f funcLike, pattern string) *Element {
 	if strings.HasPrefix(pattern, "~") {
 		// end with something
 
 		pattern = strings.TrimPrefix(pattern, "~")
-		for _, p := range m.In {
+		for _, p := range f.InParams() {
 			if strings.HasSuffix(p.BaseType, pattern) {
 				return p
 			}
@@ -33,7 +41,7 @@ func (m *InterfaceMethod) FirstInParamLike(pattern string) *Element {
 		// start with something
 
 		pattern = strings.TrimSuffix(pattern, "~")
-		for _, p := range m.In {
+		for _, p := range f.InParams() {
 			if strings.HasPrefix(p.BaseType, pattern) {
 				return p
 			}
@@ -41,7 +49,7 @@ func (m *InterfaceMethod) FirstInParamLike(pattern string) *Element {
 	}
 
 	// full word match
-	for _, p := range m.In {
+	for _, p := range f.InParams() {
 		if p.BaseType == pattern {
 			return p
 		}
@@ -51,12 +59,12 @@ func (m *InterfaceMethod) FirstInParamLike(pattern string) *Element {
 	return &Element{}
 }
 
-func (m *InterfaceMethod) FirstOutParamLike(pattern string) *Element {
+func FirstOutParam(f funcLike, pattern string) *Element {
 	if strings.HasPrefix(pattern, "~") {
 		// end with something
 
 		pattern = strings.TrimPrefix(pattern, "~")
-		for _, p := range m.Out {
+		for _, p := range f.OutParams() {
 			if strings.HasSuffix(p.BaseType, pattern) {
 				return p
 			}
@@ -67,7 +75,7 @@ func (m *InterfaceMethod) FirstOutParamLike(pattern string) *Element {
 		// start with something
 
 		pattern = strings.TrimSuffix(pattern, "~")
-		for _, p := range m.Out {
+		for _, p := range f.OutParams() {
 			if strings.HasPrefix(p.BaseType, pattern) {
 				return p
 			}
@@ -75,7 +83,7 @@ func (m *InterfaceMethod) FirstOutParamLike(pattern string) *Element {
 	}
 
 	// full word match
-	for _, p := range m.Out {
+	for _, p := range f.OutParams() {
 		if p.BaseType == pattern {
 			return p
 		}

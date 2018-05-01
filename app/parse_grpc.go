@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/straightdave/lesphina"
+	"github.com/straightdave/lesphina/item"
 )
 
 // gRPC
@@ -60,8 +61,8 @@ func getServiceInfo(file string) (string, error) {
 		for _, met := range inf.Methods {
 			ends = append(ends, Endpoint{
 				Name:    met.Name,
-				Intype:  met.FirstInParamLike("~Request").RawType,
-				Outtype: met.FirstOutParamLike("~Response").RawType,
+				Intype:  item.FirstInParam(met, "~Request").RawType,
+				Outtype: item.FirstOutParam(met, "~Response").RawType,
 			})
 		}
 

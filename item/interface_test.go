@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestFirstInParamLike(t *testing.T) {
+func TestFirstInParam(t *testing.T) {
 	method := &InterfaceMethod{
 		Name: "haha",
 		In: []*Element{
@@ -22,10 +22,27 @@ func TestFirstInParamLike(t *testing.T) {
 		},
 	}
 
-	if method.FirstInParamLike("~Request").Name != "inparam1" {
+	if FirstInParam(method, "~Request").Name != "inparam1" {
 		t.Fail()
 	}
 
 	// try to invoke nil pointer panic
-	t.Logf("hahah: %v\n", method.FirstInParamLike("~NotExists").Name)
+	t.Logf("hahah: %v\n", FirstInParam(method, "~NotExists").Name)
+}
+
+func TestWorksForFunctions(t *testing.T) {
+	fun := &Function{
+		Name: "func1",
+		In: []*Element{
+			&Element{
+				Name:     "inparam1",
+				RawType:  "*XXXRequest",
+				BaseType: "XXXRequest",
+			},
+		},
+	}
+
+	if FirstInParam(fun, "~Request").Name != "inparam1" {
+		t.Fail()
+	}
 }

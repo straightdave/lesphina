@@ -8,6 +8,9 @@ type Function struct {
 	RawBody string     `json:"raw_body"`
 }
 
+func (i *Function) InParams() []*Element  { return i.In }
+func (i *Function) OutParams() []*Element { return i.Out }
+
 type Element struct {
 	Name    string `json:"name"`
 	RawType string `json:"raw_type"`
