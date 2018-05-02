@@ -19,6 +19,11 @@ func (a *Astruct) Func3() int {
 	return 0
 }
 
+type Int0 interface{
+    Name(user *User) (haha map[string]string)
+    SayHello(name, lastName string, age int) (t []string, t2 error)
+}
+
 type Int1 interface{}
 
 type Int2 interface{

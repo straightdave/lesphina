@@ -3,7 +3,7 @@ package lesphina
 import (
 	"testing"
 
-	"github.com/straightdave/lesphina/item"
+	"github.com/straightdave/lesphina/entry"
 )
 
 func TestParse(t *testing.T) {
@@ -12,7 +12,7 @@ func TestParse(t *testing.T) {
 		t.Fatalf("parsing failed: %v\n", err)
 	}
 
-	t.Logf("\n%v\n", Jsonify(meta))
+	t.Logf("\n%v\n", meta.Json())
 
 	if meta.NumFunction != uint(len(meta.Functions)) ||
 		meta.NumInterface != uint(len(meta.Interfaces)) ||
@@ -33,7 +33,7 @@ func TestParsingInterfaces(t *testing.T) {
 	}
 
 	for _, intr := range interfaces {
-		t.Log(Jsonify(intr))
+		t.Log(intr.Json())
 		t.Log("----")
 	}
 }
@@ -53,7 +53,7 @@ func TestGetArgs(t *testing.T) {
 }
 
 func TestParseEle(t *testing.T) {
-	ele := &item.Element{
+	ele := &entry.Element{
 		Name:    "hahaha",
 		RawType: "*XXXRequest",
 	}

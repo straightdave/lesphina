@@ -1,8 +1,20 @@
-package item
+package entry
 
 import (
 	"testing"
 )
+
+func TestSomeToJson(t *testing.T) {
+	obj := &Import{
+		Alias: "ctx",
+		Name:  "context",
+	}
+
+	if len(obj.Json()) < 3 {
+		// in case "{}"
+		t.Fail()
+	}
+}
 
 func TestFirstInParam(t *testing.T) {
 	method := &InterfaceMethod{
@@ -22,12 +34,20 @@ func TestFirstInParam(t *testing.T) {
 		},
 	}
 
-	if FirstInParam(method, "~Request").Name != "inparam1" {
+	if len(method.Json()) < 3 {
+		t.Fail()
+	}
+
+	if firstInParam(method, "~Request").Name != "inparam1" {
+		t.Fail()
+	}
+
+	if method.FirstInParam("~Request").Name != "inparam1" {
 		t.Fail()
 	}
 
 	// try to invoke nil pointer panic
-	t.Logf("hahah: %v\n", FirstInParam(method, "~NotExists").Name)
+	t.Logf("hahah: %v\n", firstInParam(method, "~NotExists").Name)
 }
 
 func TestWorksForFunctions(t *testing.T) {
@@ -42,7 +62,15 @@ func TestWorksForFunctions(t *testing.T) {
 		},
 	}
 
-	if FirstInParam(fun, "~Request").Name != "inparam1" {
+	if len(fun.Json()) < 3 {
+		t.Fail()
+	}
+
+	if firstInParam(fun, "~Request").Name != "inparam1" {
+		t.Fail()
+	}
+
+	if fun.FirstInParam("~Request").Name != "inparam1" {
 		t.Fail()
 	}
 }

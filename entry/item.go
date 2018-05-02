@@ -1,31 +1,51 @@
-package item
+package entry
 
 import (
+	"encoding/json"
 	"strings"
 )
 
-type Interface struct {
-	Name    string             `json:"name"`
-	RawBody string             `json:"raw_body"`
-	Methods []*InterfaceMethod `json:"methods"`
+type Kind int
+
+const (
+	KindUnknown Kind = iota
+	KindImport
+	KindElement
+	KindVar
+	KindInterface
+	KindStruct
+	KindFunction
+	KindInterfaceMethod
+)
+
+type Entry interface {
+	GetName() string
+	GetKind() Kind
 }
 
-type InterfaceMethod struct {
-	Name    string     `json:"name"`
-	RawType string     `json:"raw_type"`
-	In      []*Element `json:"in,omitempty"`
-	Out     []*Element `json:"out,omitempty"`
+func marshal(i Entry) string {
+	j, _ := json.MarshalIndent(i, "", "    ")
+	return string(j)
 }
 
-type funcLike interface {
+type FuncLike interface {
 	InParams() []*Element
 	OutParams() []*Element
 }
 
-func (i *InterfaceMethod) InParams() []*Element  { return i.In }
-func (i *InterfaceMethod) OutParams() []*Element { return i.Out }
+func firstInParam(f FuncLike, pattern string) *Element {
+	if strings.HasPrefix(pattern, "~") && strings.HasSuffix(pattern, "~") {
+		// something in the middle
 
-func FirstInParam(f funcLike, pattern string) *Element {
+		pattern = strings.TrimLeft(pattern, "~")
+		pattern = strings.TrimRight(pattern, "~")
+		for _, p := range f.InParams() {
+			if strings.Contains(p.BaseType, pattern) {
+				return p
+			}
+		}
+	}
+
 	if strings.HasPrefix(pattern, "~") {
 		// end with something
 
@@ -59,7 +79,19 @@ func FirstInParam(f funcLike, pattern string) *Element {
 	return &Element{}
 }
 
-func FirstOutParam(f funcLike, pattern string) *Element {
+func firstOutParam(f FuncLike, pattern string) *Element {
+	if strings.HasPrefix(pattern, "~") && strings.HasSuffix(pattern, "~") {
+		// something in the middle
+
+		pattern = strings.TrimLeft(pattern, "~")
+		pattern = strings.TrimRight(pattern, "~")
+		for _, p := range f.OutParams() {
+			if strings.Contains(p.BaseType, pattern) {
+				return p
+			}
+		}
+	}
+
 	if strings.HasPrefix(pattern, "~") {
 		// end with something
 
