@@ -1,6 +1,7 @@
 package lesphina
 
 import (
+	"encoding/json"
 	"errors"
 	"os"
 )
@@ -38,4 +39,12 @@ func Read(source string) (*Lesphina, error) {
 		FileInfo: &fi,
 		Meta:     meta,
 	}, nil
+}
+
+func ReadJson(raw string) (*Lesphina, error) {
+	var meta Meta
+	if err := json.Unmarshal([]byte(raw), &meta); err != nil {
+		return nil, err
+	}
+	return &Lesphina{Meta: &meta}, nil
 }
