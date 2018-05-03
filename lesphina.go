@@ -41,6 +41,10 @@ func Read(source string) (*Lesphina, error) {
 	}, nil
 }
 
+func (les *Lesphina) DumpJson() string {
+	return les.Meta.Json()
+}
+
 func ReadJson(raw string) (*Lesphina, error) {
 	var meta Meta
 	if err := json.Unmarshal([]byte(raw), &meta); err != nil {
