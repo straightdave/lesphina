@@ -42,6 +42,10 @@ func (q *Query) First() entry.Entry {
 	return q.residue[0]
 }
 
+func (q *Query) All() []entry.Entry {
+	return q.residue
+}
+
 func (q *Query) ByName(name string) *Query {
 	var res []entry.Entry
 	for _, e := range q.residue {
