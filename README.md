@@ -17,13 +17,13 @@ Now most of language entries are in les.Meta structure.
 ```golang
 q := les.Query()
 
-var theEntryIWant entry.Entry
+var theEntryIWant Entry
 
 // ByKind() and ByName() could be chained
 // using First() to resolve this query 
-theEntryIWant = q.ByKind(entry.KindInterface).ByName("someName").First()
+theEntryIWant = q.ByKind(KindInterface).ByName("someName").First()
 
-theInterfaceIWant, ok := theEntryIWant.(*entry.Interface)
+theInterfaceIWant, ok := theEntryIWant.(*Interface)
 
 // use it if ok!
 
