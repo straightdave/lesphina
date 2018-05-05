@@ -9,8 +9,6 @@ import (
 	"go/token"
 	"regexp"
 	"strings"
-
-	"github.com/straightdave/lesphina/entry"
 )
 
 var (
@@ -28,11 +26,11 @@ type Meta struct {
 	NumInterface uint `json:"num_interface"`
 	NumFunction  uint `json:"num_function"`
 
-	Imports    []*entry.Import    `json:"imports"`
-	Vars       []*entry.Var       `json:"vars"`
-	Structs    []*entry.Struct    `json:"structs"`
-	Interfaces []*entry.Interface `json:"interfaces"`
-	Functions  []*entry.Function  `json:"functions"`
+	Imports    []*Import    `json:"imports"`
+	Vars       []*Var       `json:"vars"`
+	Structs    []*Struct    `json:"structs"`
+	Interfaces []*Interface `json:"interfaces"`
+	Functions  []*Function  `json:"functions"`
 }
 
 func (m *Meta) Json() string {
@@ -100,14 +98,14 @@ func parseSource(source string) (meta *Meta, err error) {
 			if tName, ok := posType[tPos]; ok {
 				// we get a struct
 
-				str := &entry.Struct{
+				str := &Struct{
 					Name:    tName,
 					RawBody: getNodeRawString(fset, d),
 				}
 
 				// listing *ast.Field, the fields of such struct
 				for _, f := range d.Fields.List {
-					ele := &entry.Element{
+					ele := &Element{
 						Name:    getNameFromIdents(f.Names),
 						RawType: getNodeRawString(fset, f.Type),
 					}
@@ -129,14 +127,14 @@ func parseSource(source string) (meta *Meta, err error) {
 			if tName, ok := posType[tPos]; ok {
 				// we get an interface
 
-				intf := &entry.Interface{
+				intf := &Interface{
 					Name:    tName,
 					RawBody: getNodeRawString(fset, d),
 				}
 
 				if d.Methods.NumFields() > 0 {
 					for _, m := range d.Methods.List {
-						tmp := &entry.InterfaceMethod{
+						tmp := &InterfaceMethod{
 							Name:    getNameFromIdents(m.Names),
 							RawType: getNodeRawString(fset, m.Type),
 						}
@@ -154,7 +152,7 @@ func parseSource(source string) (meta *Meta, err error) {
 
 			meta.NumFunction++
 
-			fun := &entry.Function{
+			fun := &Function{
 				Name:    d.Name.Name,
 				RawBody: getNodeRawString(fset, d.Body),
 			}
@@ -162,7 +160,7 @@ func parseSource(source string) (meta *Meta, err error) {
 			// receivers
 			if d.Recv.NumFields() > 0 {
 				for _, r := range d.Recv.List {
-					recv := &entry.Element{
+					recv := &Element{
 						Name:    getNameFromIdents(r.Names),
 						RawType: getNodeRawString(fset, r.Type),
 					}
@@ -174,7 +172,7 @@ func parseSource(source string) (meta *Meta, err error) {
 			// in params
 			if d.Type.Params.NumFields() > 0 {
 				for _, p := range d.Type.Params.List {
-					ele := &entry.Element{
+					ele := &Element{
 						Name:    getNameFromIdents(p.Names),
 						RawType: getNodeRawString(fset, p.Type),
 					}
@@ -186,7 +184,7 @@ func parseSource(source string) (meta *Meta, err error) {
 			// out params
 			if d.Type.Results.NumFields() > 0 {
 				for _, r := range d.Type.Results.List {
-					ele := &entry.Element{
+					ele := &Element{
 						Name:    getNameFromIdents(r.Names),
 						RawType: getNodeRawString(fset, r.Type),
 					}
@@ -217,7 +215,7 @@ func getNameFromIdents(idents []*ast.Ident) (res string) {
 	return
 }
 
-func getInterfaceMethodDetail(m *entry.InterfaceMethod) {
+func getInterfaceMethodDetail(m *InterfaceMethod) {
 	rawType := m.RawType // "func(.. ..) ...."
 
 	tmp := rParams.FindStringSubmatch(rawType)
@@ -236,7 +234,7 @@ func getInterfaceMethodDetail(m *entry.InterfaceMethod) {
 	outParams := getArgs(group2)
 
 	for i := len(inParams) - 1; i >= 0; i-- {
-		ele := &entry.Element{
+		ele := &Element{
 			Name:    inParams[i][0],
 			RawType: inParams[i][1],
 		}
@@ -245,7 +243,7 @@ func getInterfaceMethodDetail(m *entry.InterfaceMethod) {
 	}
 
 	for i := len(outParams) - 1; i >= 0; i-- {
-		ele := &entry.Element{
+		ele := &Element{
 			Name:    outParams[i][0],
 			RawType: outParams[i][1],
 		}
@@ -254,7 +252,7 @@ func getInterfaceMethodDetail(m *entry.InterfaceMethod) {
 	}
 }
 
-func parseEle(ele *entry.Element) {
+func parseEle(ele *Element) {
 	// parse deeper of element
 
 	if ele.RawType == "" {

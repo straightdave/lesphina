@@ -2,8 +2,6 @@ package lesphina
 
 import (
 	"testing"
-
-	"github.com/straightdave/lesphina/entry"
 )
 
 func TestQuery(t *testing.T) {
@@ -17,7 +15,7 @@ func TestQuery(t *testing.T) {
 		t.Fail()
 	}
 
-	f := q.ByKind(entry.KindInterface).ByName("Int").ByName("Int0").First()
+	f := q.ByKind(KindInterface).ByName("Int").ByName("Int0").First()
 	if f == nil {
 		t.Fail()
 	}
@@ -26,7 +24,7 @@ func TestQuery(t *testing.T) {
 		t.Fail()
 	}
 
-	ff, ok := f.(*entry.Interface) // '*entry.Interface' implements entry.Entry
+	ff, ok := f.(*Interface) // '*Interface' implements Entry
 	if !ok {
 		t.Fail()
 	}

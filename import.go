@@ -1,4 +1,4 @@
-package entry
+package lesphina
 
 type Import struct {
 	Alias string `json:"alias"`

@@ -1,4 +1,4 @@
-package entry
+package lesphina
 
 import (
 	"encoding/json"

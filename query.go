@@ -2,16 +2,14 @@ package lesphina
 
 import (
 	"strings"
-
-	"github.com/straightdave/lesphina/entry"
 )
 
 type Query struct {
-	residue []entry.Entry
+	residue []Entry
 }
 
 func (les *Lesphina) Query() *Query {
-	var set []entry.Entry
+	var set []Entry
 
 	// flatten Meta
 	for _, s := range les.Meta.Structs {
@@ -34,7 +32,7 @@ func (les *Lesphina) Query() *Query {
 	}
 }
 
-func (q *Query) First() entry.Entry {
+func (q *Query) First() Entry {
 	if len(q.residue) < 1 {
 		return nil
 	}
@@ -42,12 +40,12 @@ func (q *Query) First() entry.Entry {
 	return q.residue[0]
 }
 
-func (q *Query) All() []entry.Entry {
+func (q *Query) All() []Entry {
 	return q.residue
 }
 
 func (q *Query) ByName(name string) *Query {
-	var res []entry.Entry
+	var res []Entry
 	for _, e := range q.residue {
 		if strings.Contains(e.GetName(), name) {
 			res = append(res, e)
@@ -57,8 +55,8 @@ func (q *Query) ByName(name string) *Query {
 	return q
 }
 
-func (q *Query) ByKind(kind entry.Kind) *Query {
-	var res []entry.Entry
+func (q *Query) ByKind(kind Kind) *Query {
+	var res []Entry
 	for _, e := range q.residue {
 		if e.GetKind() == kind {
 			res = append(res, e)

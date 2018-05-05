@@ -2,8 +2,6 @@ package lesphina
 
 import (
 	"testing"
-
-	"github.com/straightdave/lesphina/entry"
 )
 
 func TestParse(t *testing.T) {
@@ -53,7 +51,7 @@ func TestGetArgs(t *testing.T) {
 }
 
 func TestParseEle(t *testing.T) {
-	ele := &entry.Element{
+	ele := &Element{
 		Name:    "hahaha",
 		RawType: "*XXXRequest",
 	}

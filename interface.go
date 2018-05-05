@@ -1,4 +1,4 @@
-package entry
+package lesphina
 
 type Interface struct {
 	Name    string             `json:"name"`

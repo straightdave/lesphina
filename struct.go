@@ -1,4 +1,4 @@
-package entry
+package lesphina
 
 type Struct struct {
 	Name    string     `json:"name"`
