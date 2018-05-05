@@ -8,6 +8,7 @@ type Query struct {
 	residue []Entry
 }
 
+// Query gets a query instance from lesphina instance.
 func (les *Lesphina) Query() *Query {
 	var set []Entry
 
@@ -32,6 +33,7 @@ func (les *Lesphina) Query() *Query {
 	}
 }
 
+// First resolves a query instance and returns the first qualified result.
 func (q *Query) First() Entry {
 	if len(q.residue) < 1 {
 		return nil
@@ -40,10 +42,12 @@ func (q *Query) First() Entry {
 	return q.residue[0]
 }
 
+// All resolves a query instance and returns all qualified results.
 func (q *Query) All() []Entry {
 	return q.residue
 }
 
+// ByName filters entries by the type name.
 func (q *Query) ByName(name string) *Query {
 	var res []Entry
 	for _, e := range q.residue {
@@ -55,6 +59,7 @@ func (q *Query) ByName(name string) *Query {
 	return q
 }
 
+// ByKind filters entries by type kind.
 func (q *Query) ByKind(kind Kind) *Query {
 	var res []Entry
 	for _, e := range q.residue {

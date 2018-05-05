@@ -16,6 +16,8 @@ func (i *Function) OutParams() []*Element                 { return i.Out }
 func (i *Function) FirstInParam(pattern string) *Element  { return firstInParam(i, pattern) }
 func (i *Function) FirstOutParam(pattern string) *Element { return firstOutParam(i, pattern) }
 
+// Element stands for the very often used entry declaration.
+// You see it every where in go code: "<name> <type>"
 type Element struct {
 	Name       string `json:"name"`
 	RawType    string `json:"raw_type"`

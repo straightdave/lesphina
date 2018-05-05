@@ -21,6 +21,8 @@ type Lesphina struct {
 	Meta     *Meta        `json:"meta"`
 }
 
+// Read reads source meta from a file and returns a lesphina instance.
+// This is probably the most common used entrance of this package.
 func Read(source string) (*Lesphina, error) {
 	var fi os.FileInfo
 	var err error
@@ -46,6 +48,7 @@ func Read(source string) (*Lesphina, error) {
 	}, nil
 }
 
+// DumpString dumps source meta into a compressed base64 string.
 func (les *Lesphina) DumpString() string {
 	raw := les.Meta.Json()
 	var buff bytes.Buffer
@@ -62,6 +65,7 @@ func (les *Lesphina) DumpString() string {
 	return base64.StdEncoding.EncodeToString(buff.Bytes())
 }
 
+// Restore restores lesphina instance from a compressed base64 string.
 func Restore(raw string) *Lesphina {
 	raw = strings.TrimSpace(raw)
 	zippedStr, err := base64.StdEncoding.DecodeString(raw)

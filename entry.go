@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Kind represents different entry types in lesphina.
 type Kind int
 
 const (
@@ -18,6 +19,7 @@ const (
 	KindInterfaceMethod
 )
 
+// Entry is the common stuff of all types in lesphina.
 type Entry interface {
 	GetName() string
 	GetKind() Kind
@@ -28,6 +30,7 @@ func marshal(i Entry) string {
 	return string(j)
 }
 
+// FuncLike stands for both functions and interface methods.
 type FuncLike interface {
 	InParams() []*Element
 	OutParams() []*Element
