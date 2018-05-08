@@ -9,8 +9,7 @@ import (
 type Kind int
 
 const (
-	KindUnknown Kind = iota
-	KindImport
+	KindImport Kind = iota
 	KindElement
 	KindVar
 	KindInterface
