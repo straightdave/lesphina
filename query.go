@@ -48,13 +48,41 @@ func (q *Query) All() []Entry {
 }
 
 // ByName filters entries by the type name.
+// Supporting '~xxxx', 'xxxx~' and '~xxxx~' patterns
 func (q *Query) ByName(name string) *Query {
 	var res []Entry
-	for _, e := range q.residue {
-		if strings.Contains(e.GetName(), name) {
-			res = append(res, e)
+
+	fPre := strings.HasPrefix(name, "~")
+	fSuf := strings.HasSuffix(name, "~")
+	name = strings.TrimLeft(name, "~")
+	name = strings.TrimRight(name, "~")
+
+	if fPre && fSuf {
+		for _, e := range q.residue {
+			if strings.Contains(e.GetName(), name) {
+				res = append(res, e)
+			}
+		}
+	} else if fPre {
+		for _, e := range q.residue {
+			if strings.HasSuffix(e.GetName(), name) {
+				res = append(res, e)
+			}
+		}
+	} else if fSuf {
+		for _, e := range q.residue {
+			if strings.HasPrefix(e.GetName(), name) {
+				res = append(res, e)
+			}
+		}
+	} else {
+		for _, e := range q.residue {
+			if e.GetName() == name {
+				res = append(res, e)
+			}
 		}
 	}
+
 	q.residue = res
 	return q
 }
