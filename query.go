@@ -13,6 +13,8 @@ func (les *Lesphina) Query() *Query {
 	var set []Entry
 
 	// flatten Meta
+	// only support following three kinds for now
+
 	for _, s := range les.Meta.Structs {
 		set = append(set, s)
 	}
@@ -28,9 +30,7 @@ func (les *Lesphina) Query() *Query {
 		}
 	}
 
-	return &Query{
-		residue: set,
-	}
+	return &Query{residue: set}
 }
 
 // First resolves a query instance and returns the first qualified result.

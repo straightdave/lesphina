@@ -15,7 +15,7 @@ func TestQuery(t *testing.T) {
 		t.Fail()
 	}
 
-	f := q.ByKind(KindInterface).ByName("Int").ByName("Int0").First()
+	f := q.ByKind(KindInterface).ByName("~Int~").ByName("Int0").First()
 	if f == nil {
 		t.Fail()
 	}
@@ -45,11 +45,18 @@ func TestByName(t *testing.T) {
 	}
 
 	q := les.Query()
-	funs := q.ByName("Fun~").All()
-	if len(funs) < 2 {
+	if len(q.residue) < 1 {
+		t.Fatalf("query no init entry")
+	}
+
+	fun := q.ByKind(KindFunction).ByName("Func").First()
+	if fun == nil {
+		t.Logf("found no Func")
 		t.Fail()
 	}
-	t.Log("fun:", len(funs))
+
+	funf := fun.(*Function)
+	t.Log("func found:", funf.GetName())
 
 	q = les.Query()
 	f := q.ByName("FuncNotExist").All() // no panic

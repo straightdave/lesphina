@@ -11,6 +11,10 @@ func Func1() {
 
 }
 
+func Func() {
+
+}
+
 func Func2(a string) bool {
 	return false
 }
