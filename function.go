@@ -1,5 +1,12 @@
 package lesphina
 
+import (
+	"regexp"
+	"strings"
+)
+
+var rJsonFieldName = regexp.MustCompile(`json:"(.+?)"`)
+
 type Function struct {
 	Name    string     `json:"name"`
 	Recv    []*Element `json:"recv,omitempty"`
@@ -34,3 +41,21 @@ type Element struct {
 func (i *Element) GetName() string { return i.Name }
 func (i *Element) GetKind() Kind   { return KindElement }
 func (i *Element) Json() string    { return marshal(i) }
+
+// JsonFieldName returns the field name of element in json data.
+// this comes out from RawTag and only focus on json
+func (i *Element) JsonFieldName() string {
+	if i.RawTag == "" {
+		return ""
+	}
+
+	tag := strings.TrimLeft(i.RawTag, "`")
+	tag = strings.TrimRight(tag, "`")
+
+	// json:"xxx" bson:"yyy" ...
+	m := rJsonFieldName.FindStringSubmatch(tag)
+	if len(m) != 2 {
+		return ""
+	}
+	return m[1]
+}

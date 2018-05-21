@@ -8,7 +8,7 @@ func TestDumpRestore(t *testing.T) {
 	les, err := Read("test_fixture/myapp.pb.go")
 	if err != nil || les == nil {
 		t.Log(err.Error())
-		t.Fail()
+		t.FailNow()
 	}
 
 	// t.Log("meta:" + les.Meta.Json())

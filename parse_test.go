@@ -64,3 +64,26 @@ func TestParsingEle(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestJsonFieldName(t *testing.T) {
+	ele := &Element{
+		Name:   "MyEle",
+		RawTag: "`" + `json:"haha"` + "`",
+	}
+
+	if ele.JsonFieldName() != "haha" {
+		t.Fail()
+	}
+	t.Logf("%v", ele.JsonFieldName())
+
+	ele2 := &Element{
+		Name:   "MyEle",
+		RawTag: "`" + `bson:"haha"` + "`",
+	}
+
+	if ele2.JsonFieldName() != "" {
+		t.Fail()
+	}
+	t.Logf("%v", ele2.JsonFieldName())
+
+}
