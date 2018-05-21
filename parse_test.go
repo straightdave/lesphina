@@ -68,7 +68,7 @@ func TestParsingEle(t *testing.T) {
 func TestJsonFieldName(t *testing.T) {
 	ele := &Element{
 		Name:   "MyEle",
-		RawTag: "`" + `json:"haha"` + "`",
+		RawTag: "`" + `json:"haha,fasdfasdf"` + "`",
 	}
 
 	if ele.JsonFieldName() != "haha" {

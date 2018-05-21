@@ -52,10 +52,10 @@ func (i *Element) JsonFieldName() string {
 	tag := strings.TrimLeft(i.RawTag, "`")
 	tag = strings.TrimRight(tag, "`")
 
-	// json:"xxx" bson:"yyy" ...
+	// json:"xxx,bbbbbb" bson:"yyy,cccccc" ...
 	m := rJsonFieldName.FindStringSubmatch(tag)
 	if len(m) != 2 {
 		return ""
 	}
-	return m[1]
+	return strings.Split(m[1], ",")[0]
 }
