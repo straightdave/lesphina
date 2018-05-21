@@ -50,7 +50,7 @@ func TestGetArgs(t *testing.T) {
 	t.Logf("res: %+v\n", getArgs("a t1, t2")) // same as: omit last type
 }
 
-func TestParseEle(t *testing.T) {
+func TestParsingEle(t *testing.T) {
 	ele := &Element{
 		Name:    "hahaha",
 		RawType: "*XXXRequest",

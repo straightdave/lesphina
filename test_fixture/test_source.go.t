@@ -37,7 +37,7 @@ type Int2 interface{
 
 type Str1 struct {}
 type Str2 struct {
-    Name string
+    Name string `json:"some,omitempty"`
 }
 
 // alias

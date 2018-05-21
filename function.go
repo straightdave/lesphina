@@ -28,6 +28,7 @@ type Element struct {
 	BaseType   string `json:"base_type"`
 	KeyType    string `json:"key_type,omitempty"`
 	ValueType  string `json:"value_type,omitempty"`
+	RawTag     string `json:"raw_tag,omitempty"` // used in struct definition
 }
 
 func (i *Element) GetName() string { return i.Name }

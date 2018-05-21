@@ -108,6 +108,7 @@ func parseSource(source string) (meta *Meta, err error) {
 					ele := &Element{
 						Name:    getNameFromIdents(f.Names),
 						RawType: getNodeRawString(fset, f.Type),
+						RawTag:  f.Tag.Value,
 					}
 					parseEle(ele)
 					str.Fields = append(str.Fields, ele)
