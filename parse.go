@@ -67,17 +67,18 @@ func parseSource(source string) (meta *Meta, err error) {
 
 			switch d.Tok {
 			case token.IMPORT:
-				o := d.Specs[0].(*ast.ImportSpec)
-
-				i := &Import{}
-				if o.Name != nil {
-					i.Alias = o.Name.Name
+				for _, imp := range d.Specs {
+					o := imp.(*ast.ImportSpec)
+					i := &Import{}
+					if o.Name != nil {
+						i.Alias = o.Name.Name
+					}
+					if o.Path != nil {
+						i.Name = o.Path.Value
+					}
+					meta.Imports = append(meta.Imports, i)
+					meta.NumImport++
 				}
-				if o.Path != nil {
-					i.Name = o.Path.Value
-				}
-				meta.Imports = append(meta.Imports, i)
-				meta.NumImport++
 			case token.CONST:
 				// TODO
 				meta.NumVar++
