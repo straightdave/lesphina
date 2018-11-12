@@ -1,16 +1,17 @@
 package lesphina
 
 import (
+	"fmt"
 	"testing"
 )
 
 func TestParse(t *testing.T) {
 	meta, err := parseSource("./test_fixture/test_source.go.t")
 	if err != nil {
-		t.Fatalf("parsing failed: %v\n", err)
+		t.Fatalf("parsing failed: %v", err)
 	}
 
-	t.Logf("\n%v\n", meta.Json())
+	t.Logf("%v", meta.Json())
 
 	if meta.NumFunction != uint(len(meta.Functions)) ||
 		meta.NumInterface != uint(len(meta.Interfaces)) ||
@@ -19,10 +20,21 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestParseImports(t *testing.T) {
+	meta, err := parseSource("./test_fixture/myapp.pb.go")
+	if err != nil {
+		t.Fatalf("parsing failed: %v", err)
+	}
+
+	for _, i := range meta.Imports {
+		fmt.Printf("- %+v\n", i)
+	}
+}
+
 func TestParsingInterfaces(t *testing.T) {
 	meta, err := parseSource("./test_fixture/test_source.go.t")
 	if err != nil {
-		t.Fatalf("parsing failed: %v\n", err)
+		t.Fatalf("parsing failed: %v", err)
 	}
 
 	interfaces := meta.Interfaces
@@ -37,17 +49,17 @@ func TestParsingInterfaces(t *testing.T) {
 }
 
 func TestGetArgs(t *testing.T) {
-	t.Logf("res: %+v\n", getArgs("t1"))
-	t.Logf("res: %+v\n", getArgs("t1,t2"))
-	t.Logf("res: %+v\n", getArgs("a t1, b t2"))
+	t.Logf("res: %+v", getArgs("t1"))
+	t.Logf("res: %+v", getArgs("t1,t2"))
+	t.Logf("res: %+v", getArgs("a t1, b t2"))
 
 	// omit one type (not the last)
-	t.Logf("res: %+v\n", getArgs("a1, a2 t1, b t2"))
+	t.Logf("res: %+v", getArgs("a1, a2 t1, b t2"))
 
 	// omit any name will cause problems
 	// but it's fine since that's illegal
-	t.Logf("res: %+v\n", getArgs("t1, b t2"))
-	t.Logf("res: %+v\n", getArgs("a t1, t2")) // same as: omit last type
+	t.Logf("res: %+v", getArgs("t1, b t2"))
+	t.Logf("res: %+v", getArgs("a t1, t2")) // same as: omit last type
 }
 
 func TestParsingEle(t *testing.T) {
@@ -58,7 +70,7 @@ func TestParsingEle(t *testing.T) {
 
 	parseEle(ele)
 
-	t.Logf("parsed ele: %+v\n", ele)
+	t.Logf("parsed ele: %+v", ele)
 
 	if ele.IsPointer != true {
 		t.Fail()

@@ -20,13 +20,12 @@ q := les.Query()
 var theEntryIWant Entry
 
 // ByKind() and ByName() could be chained
-// using First() to resolve this query 
+// using First() to resolve this query
 theEntryIWant = q.ByKind(KindInterface).ByName("someName").First()
 
 theInterfaceIWant, ok := theEntryIWant.(*Interface)
 
 // use it if ok!
-
 ```
 
 
