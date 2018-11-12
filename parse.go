@@ -3,6 +3,7 @@ package lesphina
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/printer"
@@ -41,7 +42,7 @@ func (m *Meta) Json() string {
 func parseSource(source string) (meta *Meta, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			meta, err = nil, r.(error)
+			meta, err = nil, fmt.Errorf("lesphina parsing panic: %v", r.(error))
 		}
 	}()
 
@@ -67,10 +68,15 @@ func parseSource(source string) (meta *Meta, err error) {
 			switch d.Tok {
 			case token.IMPORT:
 				o := d.Specs[0].(*ast.ImportSpec)
-				meta.Imports = append(meta.Imports, &Import{
-					Alias: o.Name.Name,
-					Name:  o.Path.Value,
-				})
+
+				i := &Import{}
+				if o.Name != nil {
+					i.Alias = o.Name.Name
+				}
+				if o.Path != nil {
+					i.Name = o.Path.Value
+				}
+				meta.Imports = append(meta.Imports, i)
 				meta.NumImport++
 			case token.CONST:
 				// TODO

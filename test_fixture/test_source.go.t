@@ -1,10 +1,32 @@
 package somePackage
 
 import (
-	"fmt"
-	"os"
+    "bytes"
+    "encoding/json"
+    "flag"
+    "fmt"
+    "io"
+    "io/ioutil"
+    "log"
+    "net/http"
+    "net/url"
+    "os"
+    "regexp"
+    "strconv"
+    "strings"
+    "text/template"
+    "time"
 
-	some "some/place/some"
+    "github.com/golang/protobuf/jsonpb"
+    "github.com/golang/protobuf/proto"
+    protoempty "github.com/golang/protobuf/ptypes/empty"
+    "golang.org/x/net/context"
+    "google.golang.org/grpc"
+    "google.golang.org/grpc/metadata"
+
+    gozip "github.com/straightdave/gozip/lib"
+    "github.com/straightdave/lesphina"
+    trunks "github.com/straightdave/trunks/lib"
 )
 
 func Func1() {

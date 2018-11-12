@@ -21,7 +21,7 @@ func TestParse(t *testing.T) {
 }
 
 func TestParseImports(t *testing.T) {
-	meta, err := parseSource("./test_fixture/myapp.pb.go")
+	meta, err := parseSource("./test_fixture/test_source.go.t")
 	if err != nil {
 		t.Fatalf("parsing failed: %v", err)
 	}
