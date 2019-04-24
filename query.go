@@ -13,7 +13,15 @@ func (les *Lesphina) Query() *Query {
 	var set []Entry
 
 	// flatten Meta
-	// only support following three kinds for now
+	// TODO: to support more kinds for now
+
+	for _, v := range les.Meta.Vars {
+		set = append(set, v)
+	}
+
+	for _, c := range les.Meta.Consts {
+		set = append(set, c)
+	}
 
 	for _, s := range les.Meta.Structs {
 		set = append(set, s)

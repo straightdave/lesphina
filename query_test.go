@@ -51,8 +51,7 @@ func TestByName(t *testing.T) {
 
 	fun := q.ByKind(KindFunction).ByName("Func~").First()
 	if fun == nil {
-		t.Logf("found no Func")
-		t.FailNow()
+		t.Fatalf("found no func")
 	}
 
 	ff := fun.(*Function)
@@ -62,5 +61,24 @@ func TestByName(t *testing.T) {
 	f := q.ByName("FuncNotExist").All() // no panic
 	if len(f) > 0 {
 		t.Fail()
+	}
+}
+
+func TestQueryByKindConst(t *testing.T) {
+	les, err := Read("./test_fixture/test_source.go.t")
+	if err != nil {
+		t.Fatalf("parsing failed: %v\n", err)
+	}
+
+	q := les.Query()
+	if len(q.residue) < 1 {
+		t.Fatalf("query no init entry")
+	}
+	cc := q.ByKind(KindConst).All()
+	t.Logf("found %d consts", len(cc))
+	for _, c := range cc {
+		if ccc, ok := c.(*Const); ok {
+			t.Logf("const: %+v", ccc)
+		}
 	}
 }
