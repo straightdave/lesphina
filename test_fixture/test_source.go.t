@@ -1,5 +1,7 @@
 package somePackage
 
+import "aaaa"
+
 import (
     "bytes"
     "encoding/json"
@@ -29,12 +31,22 @@ import (
     trunks "github.com/straightdave/trunks/lib"
 )
 
+const (
+    aa, bb  = 10, 20
+    cc int = 10000
+)
+
+var (
+    aa1, bb1 = 10, 20
+    cc int
+)
+
 func Func1() {
 
 }
 
-func Func() {
-
+var MyFunc = func () int {
+    return 0
 }
 
 func Func2(a string) bool {
@@ -67,4 +79,3 @@ type Aha int
 
 var v1 int
 var v2 string
-

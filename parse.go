@@ -21,13 +21,15 @@ var (
 )
 
 type Meta struct {
-	NumImport    uint `json:"num_import"`
-	NumVar       uint `json:"num_var"` // package level Var
-	NumStruct    uint `json:"num_struct"`
-	NumInterface uint `json:"num_interface"`
-	NumFunction  uint `json:"num_function"`
+	NumImport    int `json:"num_import"`
+	NumConst     int `json:"num_const"`
+	NumVar       int `json:"num_var"` // package level Var
+	NumStruct    int `json:"num_struct"`
+	NumInterface int `json:"num_interface"`
+	NumFunction  int `json:"num_function"`
 
 	Imports    []*Import    `json:"imports"`
+	Consts     []*Const     `json:"consts"`
 	Vars       []*Var       `json:"vars"`
 	Structs    []*Struct    `json:"structs"`
 	Interfaces []*Interface `json:"interfaces"`
@@ -53,7 +55,7 @@ func parseSource(source string) (meta *Meta, err error) {
 		return nil, err
 	}
 
-	// internal used map to distinguish different 'type' declarations
+	// an internal-use map to distinguish different 'type' declarations
 	// key is the position of keyword literal 'struct' or 'interface'
 	// value is the name of such type
 	posType := make(map[int]string)
@@ -61,12 +63,15 @@ func parseSource(source string) (meta *Meta, err error) {
 	ast.Inspect(ff, func(n ast.Node) bool {
 
 		switch d := n.(type) {
-
 		case *ast.GenDecl:
 			// GenDecl (general declarations): import, var, const, type
 
 			switch d.Tok {
 			case token.IMPORT:
+				// in case of `import ( ... )`:
+				// there're several paths in one single `import` declaration.
+				// this works for `import ...` case, too.
+				// NOTE: this Specs pattern is similar for CONST or VAR, etc.
 				for _, imp := range d.Specs {
 					o := imp.(*ast.ImportSpec)
 					i := &Import{}
@@ -79,14 +84,61 @@ func parseSource(source string) (meta *Meta, err error) {
 					meta.Imports = append(meta.Imports, i)
 					meta.NumImport++
 				}
+
 			case token.CONST:
-				// TODO
-				meta.NumVar++
+				for _, imp := range d.Specs {
+					o := imp.(*ast.ValueSpec)
+
+					var cc []*Const
+
+					// `const aa, bb (type) = .., ..`
+					// NOTE: number of values should match the number of names here;
+					// and a const must have a value
+					lenN := len(o.Names)
+					lenV := len(o.Values)
+
+					for i := 0; i < minInt(lenN, lenV); i++ {
+						cc = append(cc, &Const{
+							Name:     o.Names[i].Name,
+							RawType:  getNodeRawString(fset, o.Type),
+							RawValue: getNodeRawString(fset, o.Values[i]),
+						})
+					}
+
+					meta.Consts = append(meta.Consts, cc...)
+					meta.NumConst += minInt(lenN, lenV)
+				}
+
 			case token.VAR:
-				// TODO
-				meta.NumVar++
+				for _, imp := range d.Specs {
+					fmt.Printf("var %+v\n", imp)
+
+					o := imp.(*ast.ValueSpec)
+
+					var vv []*Var
+					lenN := len(o.Names)
+					lenV := len(o.Values)
+
+					for i := 0; i < lenN; i++ {
+						v := &Var{
+							Name:    o.Names[i].Name,
+							RawType: getNodeRawString(fset, o.Type),
+						}
+						// if number of values is less than numbers of names,
+						// the exceeding names have no value.
+						if i < lenV {
+							v.RawValue = getNodeRawString(fset, o.Values[i])
+							v.IsFunc = strings.HasPrefix(v.RawValue, "func(")
+						}
+						vv = append(vv, v)
+					}
+
+					meta.Vars = append(meta.Vars, vv...)
+					meta.NumVar += minInt(lenN, lenV)
+				}
+
 			case token.TYPE:
-				// there're mainly 3 kinds of 'type' declaration:
+				// there're mainly 3 kinds of 'TYPE' declaration:
 				// 'struct', 'interface' and alias
 
 				// we can get names before we go further to 'struct' or 'interface' keywords
@@ -95,7 +147,7 @@ func parseSource(source string) (meta *Meta, err error) {
 
 				// position of literal 'interface', 'struct' or types (for alias) keyword
 				tPos := fset.Position(d.Pos()).Offset
-				posType[tPos+len(tName)+6] = tName // 6 = 4 (len of keyword 'type') + two spaces
+				posType[tPos+len(tName)+6] = tName // 6 => 4 (len of keyword 'type') + 2 spaces
 			}
 
 		case *ast.StructType:
@@ -342,4 +394,11 @@ func getArgs(raw string) (res [][]string) {
 	}
 
 	return
+}
+
+func minInt(a, b int) int {
+	if a >= b {
+		return a
+	}
+	return b
 }

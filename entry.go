@@ -11,6 +11,7 @@ type Kind int
 const (
 	KindImport Kind = iota
 	KindElement
+	KindConst
 	KindVar
 	KindInterface
 	KindStruct

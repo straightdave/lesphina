@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestParse(t *testing.T) {
+func TestParseAll(t *testing.T) {
 	meta, err := parseSource("./test_fixture/test_source.go.t")
 	if err != nil {
 		t.Fatalf("parsing failed: %v", err)
@@ -13,9 +13,9 @@ func TestParse(t *testing.T) {
 
 	t.Logf("%v", meta.Json())
 
-	if meta.NumFunction != uint(len(meta.Functions)) ||
-		meta.NumInterface != uint(len(meta.Interfaces)) ||
-		meta.NumStruct != uint(len(meta.Structs)) {
+	if meta.NumFunction != len(meta.Functions) ||
+		meta.NumInterface != len(meta.Interfaces) ||
+		meta.NumStruct != len(meta.Structs) {
 		t.Fail()
 	}
 }
