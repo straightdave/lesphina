@@ -49,14 +49,14 @@ func TestByName(t *testing.T) {
 		t.Fatalf("query no init entry")
 	}
 
-	fun := q.ByKind(KindFunction).ByName("Func").First()
+	fun := q.ByKind(KindFunction).ByName("Func~").First()
 	if fun == nil {
 		t.Logf("found no Func")
-		t.Fail()
+		t.FailNow()
 	}
 
-	funf := fun.(*Function)
-	t.Log("func found:", funf.GetName())
+	ff := fun.(*Function)
+	t.Log("func found:", ff.GetName())
 
 	q = les.Query()
 	f := q.ByName("FuncNotExist").All() // no panic
