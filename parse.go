@@ -9,6 +9,7 @@ import (
 	"go/printer"
 	"go/token"
 	"regexp"
+	"runtime/debug"
 	"strings"
 )
 
@@ -45,6 +46,7 @@ func parseSource(source string) (meta *Meta, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			meta, err = nil, fmt.Errorf("lesphina parsing panic: %v", r.(error))
+			fmt.Println(string(debug.Stack()))
 		}
 	}()
 
@@ -98,11 +100,14 @@ func parseSource(source string) (meta *Meta, err error) {
 					lenV := len(o.Values)
 
 					for i := 0; i < minInt(lenN, lenV); i++ {
-						cc = append(cc, &Const{
-							Name:     o.Names[i].Name,
-							RawType:  getNodeRawString(fset, o.Type),
-							RawValue: getNodeRawString(fset, o.Values[i]),
-						})
+						c := &Const{
+							Name:    o.Names[i].Name,
+							RawType: getNodeRawString(fset, o.Type),
+						}
+						if i < lenV {
+							c.RawValue = getNodeRawString(fset, o.Values[i])
+						}
+						cc = append(cc, c)
 					}
 
 					meta.Consts = append(meta.Consts, cc...)
