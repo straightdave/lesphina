@@ -111,8 +111,6 @@ func parseSource(source string) (meta *Meta, err error) {
 
 			case token.VAR:
 				for _, imp := range d.Specs {
-					fmt.Printf("var %+v\n", imp)
-
 					o := imp.(*ast.ValueSpec)
 
 					var vv []*Var
