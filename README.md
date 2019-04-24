@@ -20,7 +20,7 @@ q := les.Query()
 var theEntryIWant Entry
 
 // ByKind() and ByName() could be chained
-// using First() to resolve this query
+// using First() or All() to resolve this query
 theEntryIWant = q.ByKind(KindInterface).ByName("someName").First()
 
 theInterfaceIWant, ok := theEntryIWant.(*Interface)
@@ -28,4 +28,11 @@ theInterfaceIWant, ok := theEntryIWant.(*Interface)
 // use it if ok!
 ```
 
+Once `les := lesphina.Read()` is called, `les.Query()` could be called many times and would return a clean query handle each time.
+
+You can use `~` at the beginning or the end of query words in `ByName()`:
+```golang
+entries := q.ByName("Prefix~").All()
+entries2 := q.ByName("~Suffix").All()
+```
 
