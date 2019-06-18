@@ -17,5 +17,5 @@ func TestDumpRestore(t *testing.T) {
 	t.Log("dump:" + dump)
 
 	les1 := Restore(dump)
-	t.Log("restore:" + les1.Meta.Json())
+	t.Log("restore:" + les1.Meta.JSON())
 }

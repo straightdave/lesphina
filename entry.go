@@ -8,6 +8,7 @@ import (
 // Kind represents different entry types in lesphina.
 type Kind int
 
+// Some constants
 const (
 	KindImport Kind = iota
 	KindElement
@@ -23,6 +24,7 @@ const (
 type Entry interface {
 	GetName() string
 	GetKind() Kind
+	JSON() string
 }
 
 func marshal(i Entry) string {

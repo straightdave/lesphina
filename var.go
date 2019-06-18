@@ -1,5 +1,6 @@
 package lesphina
 
+// Var ...
 type Var struct {
 	Name     string `json:"name"`
 	RawType  string `json:"raw_type"`
@@ -9,4 +10,4 @@ type Var struct {
 
 func (i *Var) GetName() string { return i.Name }
 func (i *Var) GetKind() Kind   { return KindVar }
-func (i *Var) Json() string    { return marshal(i) }
+func (i *Var) JSON() string    { return marshal(i) }

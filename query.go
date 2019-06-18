@@ -4,6 +4,7 @@ import (
 	"strings"
 )
 
+// Query ...
 type Query struct {
 	residue []Entry
 }

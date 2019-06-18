@@ -16,6 +16,7 @@ var (
 	ErrDirNotSupported = errors.New("Dir Not Supported")
 )
 
+// Lesphina instance
 type Lesphina struct {
 	FileInfo *os.FileInfo `json:"file_info"`
 	Meta     *Meta        `json:"meta"`
@@ -50,7 +51,7 @@ func Read(source string) (*Lesphina, error) {
 
 // DumpString dumps source meta into a compressed base64 string.
 func (les *Lesphina) DumpString() string {
-	raw := les.Meta.Json()
+	raw := les.Meta.JSON()
 	var buff bytes.Buffer
 	gz := gzip.NewWriter(&buff)
 	if _, err := gz.Write([]byte(raw)); err != nil {

@@ -11,7 +11,7 @@ func TestParseAll(t *testing.T) {
 		t.Fatalf("parsing failed: %v", err)
 	}
 
-	t.Logf("%v", meta.Json())
+	t.Logf("%v", meta.JSON())
 
 	if meta.NumFunction != len(meta.Functions) ||
 		meta.NumInterface != len(meta.Interfaces) ||
@@ -43,7 +43,7 @@ func TestParsingInterfaces(t *testing.T) {
 	}
 
 	for _, intr := range interfaces {
-		t.Log(intr.Json())
+		t.Log(intr.JSON())
 		t.Log("----")
 	}
 }
@@ -83,19 +83,18 @@ func TestJsonFieldName(t *testing.T) {
 		RawTag: "`" + `json:"haha,fasdfasdf"` + "`",
 	}
 
-	if ele.JsonFieldName() != "haha" {
+	if ele.JSONFieldName() != "haha" {
 		t.Fail()
 	}
-	t.Logf("%v", ele.JsonFieldName())
+	t.Logf("%v", ele.JSONFieldName())
 
 	ele2 := &Element{
 		Name:   "MyEle",
 		RawTag: "`" + `bson:"haha"` + "`",
 	}
 
-	if ele2.JsonFieldName() != "" {
+	if ele2.JSONFieldName() != "" {
 		t.Fail()
 	}
-	t.Logf("%v", ele2.JsonFieldName())
-
+	t.Logf("%v", ele2.JSONFieldName())
 }

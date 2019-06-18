@@ -21,6 +21,7 @@ var (
 	rMap = regexp.MustCompile(`map\[(.*?)\](.*)`)
 )
 
+// Meta ...
 type Meta struct {
 	NumImport    int `json:"num_import"`
 	NumConst     int `json:"num_const"`
@@ -37,7 +38,8 @@ type Meta struct {
 	Functions  []*Function  `json:"functions"`
 }
 
-func (m *Meta) Json() string {
+// JSON returns string in JSON
+func (m *Meta) JSON() string {
 	j, _ := json.MarshalIndent(m, "", "    ")
 	return string(j)
 }

@@ -4,13 +4,13 @@ import (
 	"testing"
 )
 
-func TestSomeToJson(t *testing.T) {
+func TestSomeToJSON(t *testing.T) {
 	obj := &Import{
 		Alias: "ctx",
 		Name:  "context",
 	}
 
-	if len(obj.Json()) < 3 {
+	if len(obj.JSON()) < 3 {
 		// in case "{}"
 		t.Fail()
 	}
@@ -34,7 +34,7 @@ func TestFirstInParam(t *testing.T) {
 		},
 	}
 
-	if len(method.Json()) < 3 {
+	if len(method.JSON()) < 3 {
 		t.Fail()
 	}
 
@@ -62,7 +62,7 @@ func TestWorksForFunctions(t *testing.T) {
 		},
 	}
 
-	if len(fun.Json()) < 3 {
+	if len(fun.JSON()) < 3 {
 		t.Fail()
 	}
 
