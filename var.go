@@ -1,13 +1,18 @@
 package lesphina
 
-// Var ...
+// Var is package level vars.
 type Var struct {
 	Name     string `json:"name"`
-	RawType  string `json:"raw_type"`
-	RawValue string `json:"raw_value"`
-	IsFunc   bool   `json:"is_func,omitempty"`
+	RawType  string `json:"rawType"`
+	RawValue string `json:"rawValue"`
+	IsFunc   bool   `json:"isFunc,omitempty"`
 }
 
+// GetName ...
 func (i *Var) GetName() string { return i.Name }
-func (i *Var) GetKind() Kind   { return KindVar }
-func (i *Var) JSON() string    { return marshal(i) }
+
+// GetKind ...
+func (i *Var) GetKind() Kind { return KindVar }
+
+// JSON ...
+func (i *Var) JSON() string { return marshal(i) }

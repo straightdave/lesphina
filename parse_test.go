@@ -6,7 +6,7 @@ import (
 )
 
 func TestParseAll(t *testing.T) {
-	meta, err := parseSource("./test_fixture/test_source.go.t")
+	meta, err := parseSource("./test_fixture/test.gosrc")
 	if err != nil {
 		t.Fatalf("parsing failed: %v", err)
 	}
@@ -21,7 +21,7 @@ func TestParseAll(t *testing.T) {
 }
 
 func TestParseImports(t *testing.T) {
-	meta, err := parseSource("./test_fixture/test_source.go.t")
+	meta, err := parseSource("./test_fixture/test.gosrc")
 	if err != nil {
 		t.Fatalf("parsing failed: %v", err)
 	}
@@ -32,7 +32,7 @@ func TestParseImports(t *testing.T) {
 }
 
 func TestParsingInterfaces(t *testing.T) {
-	meta, err := parseSource("./test_fixture/test_source.go.t")
+	meta, err := parseSource("./test_fixture/test.gosrc")
 	if err != nil {
 		t.Fatalf("parsing failed: %v", err)
 	}

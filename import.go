@@ -2,10 +2,15 @@ package lesphina
 
 // Import ...
 type Import struct {
-	Alias string `json:"alias"`
 	Name  string `json:"name"` // full import path
+	Alias string `json:"alias"`
 }
 
+// GetName ...
 func (i *Import) GetName() string { return i.Name }
-func (i *Import) GetKind() Kind   { return KindImport }
-func (i *Import) JSON() string    { return marshal(i) }
+
+// GetKind ...
+func (i *Import) GetKind() Kind { return KindImport }
+
+// JSON ...
+func (i *Import) JSON() string { return marshal(i) }
