@@ -1,3 +1,2 @@
-// Package lesphina provides abilities to parse go source code files.
-// Also it provides handy query functionality to search code element entries.
+// Package lesphina provides textual / syntax parsing of Go source code.
 package lesphina
