@@ -1,11 +1,5 @@
 package lesphina
 
-import (
-	"regexp"
-)
-
-var rJSONFieldName = regexp.MustCompile(`json:"(.+?)"`)
-
 // Function ...
 type Function struct {
 	Name    string     `json:"name"`
@@ -26,8 +20,6 @@ func (i *Function) FirstInParam(pattern string) *Element { return firstInParam(i
 
 // FirstOutParam ...
 func (i *Function) FirstOutParam(pattern string) *Element { return firstOutParam(i, pattern) }
-
-// -- implement Entry interface --
 
 // GetName ...
 func (i *Function) GetName() string { return i.Name }

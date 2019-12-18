@@ -11,14 +11,15 @@ import (
 	"strings"
 )
 
+// Errors ...
 var (
 	ErrNoSuchFile      = errors.New("No Such File")
-	ErrDirNotSupported = errors.New("Dir Not Supported")
+	ErrDirNotSupported = errors.New("Dir Is Not Supported")
 )
 
-// Lesphina instance
+// Lesphina ...
 type Lesphina struct {
-	FileInfo *os.FileInfo `json:"file_info"`
+	FileInfo *os.FileInfo `json:"fileInfo"`
 	Meta     *Meta        `json:"meta"`
 }
 

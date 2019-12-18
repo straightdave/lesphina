@@ -4,10 +4,8 @@ package lesphina
 type Struct struct {
 	Name    string     `json:"name"`
 	Fields  []*Element `json:"fields"`
-	RawBody string     `json:"raw_body"`
+	RawBody string     `json:"rawBody"`
 }
-
-// -- implement Entry interface --
 
 // GetName ...
 func (i *Struct) GetName() string { return i.Name }

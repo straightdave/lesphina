@@ -5,7 +5,7 @@ import (
 )
 
 func TestQuery(t *testing.T) {
-	les, err := Read("./test_fixture/test_source.go.t")
+	les, err := Read("./test_fixture/test.gosrc")
 	if err != nil {
 		t.Fatalf("parsing failed: %v\n", err)
 	}
@@ -39,7 +39,7 @@ func TestQuery(t *testing.T) {
 }
 
 func TestByName(t *testing.T) {
-	les, err := Read("./test_fixture/test_source.go.t")
+	les, err := Read("./test_fixture/test.gosrc")
 	if err != nil {
 		t.Fatalf("parsing failed: %v\n", err)
 	}
@@ -65,7 +65,7 @@ func TestByName(t *testing.T) {
 }
 
 func TestQueryByKindConst(t *testing.T) {
-	les, err := Read("./test_fixture/test_source.go.t")
+	les, err := Read("./test_fixture/test.gosrc")
 	if err != nil {
 		t.Fatalf("parsing failed: %v\n", err)
 	}

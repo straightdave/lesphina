@@ -15,20 +15,20 @@ import (
 
 var (
 	// regex to read in- and out-params of interfaces' methods
-	rParams = regexp.MustCompile(`func\((.*?)\)(.*)`)
+	regexParams = regexp.MustCompile(`func\((.*?)\)(.*)`)
 
 	// regex to parse map type
-	rMap = regexp.MustCompile(`map\[(.*?)\](.*)`)
+	regexMap = regexp.MustCompile(`map\[(.*?)\](.*)`)
 )
 
 // Meta ...
 type Meta struct {
-	NumImport    int `json:"num_import"`
-	NumConst     int `json:"num_const"`
-	NumVar       int `json:"num_var"` // package level Var
-	NumStruct    int `json:"num_struct"`
-	NumInterface int `json:"num_interface"`
-	NumFunction  int `json:"num_function"`
+	NumImport    int `json:"numImport"`
+	NumConst     int `json:"numConst"`
+	NumVar       int `json:"numVar"`
+	NumStruct    int `json:"numStruct"`
+	NumInterface int `json:"numInterface"`
+	NumFunction  int `json:"numFunction"`
 
 	Imports    []*Import    `json:"imports"`
 	Consts     []*Const     `json:"consts"`
@@ -289,7 +289,7 @@ func getNameFromIdents(idents []*ast.Ident) (res string) {
 func getInterfaceMethodDetail(m *InterfaceMethod) {
 	rawType := m.RawType // "func(.. ..) ...."
 
-	tmp := rParams.FindStringSubmatch(rawType)
+	tmp := regexParams.FindStringSubmatch(rawType)
 
 	// if matches, tmp must be 3 parts (whole matched string, group1, group2)
 	if len(tmp) != 3 {
@@ -350,7 +350,7 @@ func parseEle(ele *Element) {
 	if strings.HasPrefix(ele.BaseType, "map") {
 		ele.IsMap = true
 
-		matches := rMap.FindStringSubmatch(ele.BaseType)
+		matches := regexMap.FindStringSubmatch(ele.BaseType)
 		if len(matches) != 3 {
 			return
 		}

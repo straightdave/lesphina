@@ -14,7 +14,6 @@ func (les *Lesphina) Query() *Query {
 	var set []Entry
 
 	// flatten Meta
-	// TODO: to support more kinds for now
 
 	for _, v := range les.Meta.Vars {
 		set = append(set, v)
@@ -47,7 +46,6 @@ func (q *Query) First() Entry {
 	if len(q.residue) < 1 {
 		return nil
 	}
-
 	return q.residue[0]
 }
 

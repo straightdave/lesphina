@@ -5,21 +5,6 @@ import (
 	"strings"
 )
 
-// Kind represents different entry types in lesphina.
-type Kind int
-
-// Some constants
-const (
-	KindImport Kind = iota
-	KindElement
-	KindConst
-	KindVar
-	KindInterface
-	KindStruct
-	KindFunction
-	KindInterfaceMethod
-)
-
 // Entry is the common stuff of all types in lesphina.
 type Entry interface {
 	GetName() string
@@ -32,7 +17,7 @@ func marshal(i Entry) string {
 	return string(j)
 }
 
-// FuncLike stands for both functions and interface methods.
+// FuncLike stands for both functions and struct/interface methods.
 type FuncLike interface {
 	InParams() []*Element
 	OutParams() []*Element

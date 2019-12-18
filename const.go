@@ -1,13 +1,11 @@
 package lesphina
 
-// Const ...
+// Const is the variables marked as `const` in source.
 type Const struct {
 	Name     string `json:"name"`
-	RawType  string `json:"raw_type"`
-	RawValue string `json:"raw_value"`
+	RawType  string `json:"rawType"`
+	RawValue string `json:"rawValue"`
 }
-
-// -- implement Entry interface --
 
 // GetName ...
 func (i *Const) GetName() string { return i.Name }
