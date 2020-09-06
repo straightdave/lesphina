@@ -71,6 +71,8 @@ type Int2 interface{
 
 type Str1 struct {}
 type Str2 struct {
+    hidden int
+
     Name string `json:"some,omitempty"`
 }
 

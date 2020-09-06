@@ -13,8 +13,8 @@ import (
 
 // Errors ...
 var (
-	ErrNoSuchFile      = errors.New("No Such File")
-	ErrDirNotSupported = errors.New("Dir Is Not Supported")
+	ErrNoSuchFile      = errors.New("no such file")
+	ErrDirNotSupported = errors.New("directory not supported")
 )
 
 // Lesphina ...
