@@ -64,6 +64,9 @@ func parseSource(source string) (meta *Meta, err error) {
 	// value is the name of such type
 	posType := make(map[int]string)
 
+	// an internal map recording structs and its methods
+	structMethods := make(map[string][]*Function)
+
 	ast.Inspect(ff, func(n ast.Node) bool {
 
 		switch d := n.(type) {
@@ -237,6 +240,8 @@ func parseSource(source string) (meta *Meta, err error) {
 					}
 					parseEle(recv)
 					fun.Recv = append(fun.Recv, recv)
+
+					structMethods[recv.BaseType] = append(structMethods[recv.BaseType], fun)
 				}
 			}
 
@@ -269,6 +274,10 @@ func parseSource(source string) (meta *Meta, err error) {
 
 		return true
 	})
+
+	for _, str := range meta.Structs {
+		str.Methods = structMethods[str.Name]
+	}
 
 	return meta, nil
 }
